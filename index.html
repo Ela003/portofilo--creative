@@ -1,0 +1,4584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Elavarasan — Digital Dojo</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+/* =========================================================
+   ROOT
+========================================================= */
+
+:root{
+    --bg:#030303;
+    --lime:#d8ff3e;
+    --cyan:#5ee7ff;
+    --pink:#ff3cac;
+    --purple:#9d4edd;
+    --orange:#ff9f1c;
+    --white:#f7f7f7;
+    --muted:#777;
+    --border:rgba(255,255,255,.11);
+
+    --mx:50vw;
+    --my:50vh;
+
+    --scroll:0;
+    --velocity:0;
+}
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+    overflow-x:hidden;
+}
+
+body{
+    background:#030303;
+    color:white;
+    font-family:Poppins,sans-serif;
+    overflow-x:hidden;
+    cursor:none;
+}
+
+a{
+    color:inherit;
+    text-decoration:none;
+}
+
+button{
+    font-family:inherit;
+}
+
+/* =========================================================
+   NOISE
+========================================================= */
+
+body::after{
+    content:"";
+    position:fixed;
+    inset:-50%;
+    width:200%;
+    height:200%;
+    pointer-events:none;
+    z-index:9998;
+
+    opacity:.035;
+
+    background-image:
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+
+    animation:noiseMove .18s steps(2) infinite;
+}
+
+@keyframes noiseMove{
+    0%{transform:translate(0,0)}
+    25%{transform:translate(3%,-2%)}
+    50%{transform:translate(-2%,3%)}
+    75%{transform:translate(2%,2%)}
+    100%{transform:translate(-3%,-3%)}
+}
+
+/* =========================================================
+   SCANLINES
+========================================================= */
+
+.scanlines{
+    position:fixed;
+    inset:0;
+    z-index:9997;
+    pointer-events:none;
+
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 3px,
+            rgba(255,255,255,.018) 4px,
+            transparent 5px
+        );
+
+    opacity:.45;
+}
+
+/* =========================================================
+   GRID
+========================================================= */
+
+.grid-bg{
+    position:fixed;
+    inset:0;
+    z-index:-9;
+    pointer-events:none;
+
+    background-image:
+        linear-gradient(rgba(216,255,62,.035) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(216,255,62,.035) 1px,transparent 1px);
+
+    background-size:60px 60px;
+
+    transform:
+        perspective(700px)
+        rotateX(60deg)
+        translateY(calc(var(--scroll) * .15px));
+
+    transform-origin:center bottom;
+
+    animation:gridFlow 8s linear infinite;
+}
+
+@keyframes gridFlow{
+    from{
+        background-position:0 0,0 0;
+    }
+    to{
+        background-position:60px 60px,60px 60px;
+    }
+}
+
+/* =========================================================
+   BACKGROUND BLOBS
+========================================================= */
+
+.blob{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(100px);
+    pointer-events:none;
+    z-index:-8;
+    opacity:.13;
+}
+
+.blob.one{
+    width:500px;
+    height:500px;
+    background:var(--lime);
+    top:-200px;
+    right:-150px;
+    animation:blobOne 12s ease-in-out infinite alternate;
+}
+
+.blob.two{
+    width:450px;
+    height:450px;
+    background:var(--cyan);
+    left:-200px;
+    bottom:-150px;
+    animation:blobTwo 15s ease-in-out infinite alternate;
+}
+
+.blob.three{
+    width:350px;
+    height:350px;
+    background:var(--pink);
+    left:45%;
+    top:30%;
+    animation:blobThree 10s ease-in-out infinite alternate;
+}
+
+@keyframes blobOne{
+    to{
+        transform:translate(-180px,220px) scale(1.5);
+    }
+}
+
+@keyframes blobTwo{
+    to{
+        transform:translate(200px,-160px) scale(1.4);
+    }
+}
+
+@keyframes blobThree{
+    to{
+        transform:translate(180px,-100px) scale(1.3);
+    }
+}
+
+/* =========================================================
+   ENERGY BEAMS
+========================================================= */
+
+.energy{
+    position:fixed;
+    width:2px;
+    height:100vh;
+    background:linear-gradient(
+        transparent,
+        var(--lime),
+        transparent
+    );
+    opacity:.12;
+    z-index:-5;
+    pointer-events:none;
+    filter:blur(1px);
+}
+
+.energy.e1{
+    left:15%;
+    animation:beam1 5s linear infinite;
+}
+
+.energy.e2{
+    left:50%;
+    animation:beam2 7s linear infinite;
+}
+
+.energy.e3{
+    left:80%;
+    animation:beam3 6s linear infinite;
+}
+
+@keyframes beam1{
+    0%{transform:translateY(-100%)}
+    100%{transform:translateY(100%)}
+}
+
+@keyframes beam2{
+    0%{transform:translateY(100%)}
+    100%{transform:translateY(-100%)}
+}
+
+@keyframes beam3{
+    0%{transform:translateY(-120%)}
+    100%{transform:translateY(120%)}
+}
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+#space{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    z-index:-6;
+    pointer-events:none;
+}
+
+/* =========================================================
+   MOUSE SPOTLIGHT
+========================================================= */
+
+.spotlight{
+    position:fixed;
+    width:500px;
+    height:500px;
+    left:var(--mx);
+    top:var(--my);
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+    z-index:-3;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(216,255,62,.09),
+            transparent 65%
+        );
+}
+
+/* =========================================================
+   CURSOR
+========================================================= */
+
+.cursor{
+    position:fixed;
+    width:22px;
+    height:22px;
+    border:1px solid var(--lime);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+    z-index:10000;
+    transition:
+        width .2s,
+        height .2s,
+        border-color .2s;
+}
+
+.cursor-dot{
+    position:fixed;
+    width:5px;
+    height:5px;
+    background:var(--lime);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+    z-index:10001;
+    box-shadow:0 0 15px var(--lime);
+}
+
+.cursor.active{
+    width:50px;
+    height:50px;
+    border-color:var(--cyan);
+}
+
+/* =========================================================
+   SCROLL ENERGY
+========================================================= */
+
+.scroll-energy{
+    position:fixed;
+    left:0;
+    top:0;
+    height:3px;
+    width:0%;
+    background:linear-gradient(
+        90deg,
+        var(--lime),
+        var(--cyan),
+        var(--pink)
+    );
+    box-shadow:
+        0 0 15px var(--lime),
+        0 0 30px var(--cyan);
+    z-index:10001;
+}
+
+/* =========================================================
+   FLOATING NAVBAR
+========================================================= */
+
+.nav-wrap{
+    position:fixed;
+    top:25px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:5000;
+    width:min(95%,1200px);
+}
+
+nav{
+    min-height:65px;
+
+    padding:10px 14px;
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+
+    background:
+        linear-gradient(
+            120deg,
+            rgba(255,255,255,.07),
+            rgba(255,255,255,.025)
+        );
+
+    border:1px solid rgba(255,255,255,.13);
+    border-radius:22px;
+
+    backdrop-filter:blur(25px);
+
+    box-shadow:
+        0 20px 80px rgba(0,0,0,.5);
+
+    transition:
+        box-shadow .3s,
+        border-color .3s;
+}
+
+nav:hover{
+    border-color:rgba(216,255,62,.4);
+
+    box-shadow:
+        0 20px 100px rgba(216,255,62,.12),
+        inset 0 0 40px rgba(216,255,62,.025);
+}
+
+.nav-handle{
+    width:44px;
+    height:42px;
+
+    border-radius:13px;
+
+    border:1px solid rgba(255,255,255,.12);
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    cursor:grab;
+
+    background:rgba(255,255,255,.03);
+
+    flex-shrink:0;
+}
+
+.nav-handle:active{
+    cursor:grabbing;
+}
+
+.nav-handle span{
+    color:var(--lime);
+    font-size:13px;
+    line-height:9px;
+}
+
+.nav-handle small{
+    font-family:Orbitron;
+    font-size:5px;
+    letter-spacing:1px;
+    color:#777;
+    margin-top:3px;
+}
+
+.logo{
+    font-family:Orbitron;
+    font-weight:900;
+    letter-spacing:3px;
+    font-size:14px;
+    margin-right:auto;
+    position:relative;
+    white-space:nowrap;
+}
+
+.logo::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-5px;
+    width:0;
+    height:1px;
+    background:var(--lime);
+    box-shadow:0 0 10px var(--lime);
+    transition:.5s;
+}
+
+.logo:hover::after{
+    width:100%;
+}
+
+.logo span{
+    color:var(--lime);
+}
+
+nav ul{
+    list-style:none;
+    display:flex;
+    gap:5px;
+}
+
+nav li a{
+    display:block;
+    padding:10px 13px;
+    border-radius:12px;
+    color:#888;
+    font-size:10px;
+    transition:.3s;
+    position:relative;
+    overflow:hidden;
+}
+
+nav li a::before{
+    content:"";
+    position:absolute;
+    left:-100%;
+    bottom:0;
+    width:100%;
+    height:1px;
+    background:var(--lime);
+    transition:.3s;
+}
+
+nav li a:hover{
+    color:white;
+    background:rgba(216,255,62,.06);
+    transform:translateY(-2px);
+}
+
+nav li a:hover::before{
+    left:0;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main{
+    width:min(1250px,92%);
+    margin:auto;
+}
+
+section{
+    min-height:100vh;
+    padding:150px 0 100px;
+    position:relative;
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    align-items:center;
+    gap:60px;
+}
+
+/* =========================================================
+   HERO TITLE
+========================================================= */
+
+.hero-title{
+    font-family:Orbitron;
+    font-size:clamp(42px,7vw,100px);
+    line-height:.95;
+    letter-spacing:-4px;
+
+    /* FULL STRAIGHT */
+    white-space:nowrap;
+
+    position:relative;
+}
+
+.hero-title .outline{
+    color:transparent;
+    -webkit-text-stroke:1px var(--lime);
+}
+
+/* =========================================================
+   CHARACTER REVEAL
+========================================================= */
+
+.char{
+    display:inline-block;
+    opacity:0;
+    transform:
+        translateY(70px)
+        rotateX(-90deg);
+
+    filter:blur(10px);
+
+    animation:
+        charReveal .8s cubic-bezier(.2,.8,.2,1)
+        forwards;
+}
+
+@keyframes charReveal{
+    to{
+        opacity:1;
+        transform:
+            translateY(0)
+            rotateX(0);
+        filter:blur(0);
+    }
+}
+
+/* =========================================================
+   RGB GLITCH
+========================================================= */
+
+.rgb{
+    position:relative;
+    display:inline-block;
+}
+
+.rgb::before,
+.rgb::after{
+    content:attr(data-text);
+    position:absolute;
+    inset:0;
+    color:transparent;
+    pointer-events:none;
+}
+
+.rgb::before{
+    -webkit-text-stroke:1px #ff004c;
+    transform:translate(3px,0);
+    animation:rgbRed 2s infinite steps(2);
+}
+
+.rgb::after{
+    -webkit-text-stroke:1px #00eaff;
+    transform:translate(-3px,0);
+    animation:rgbBlue 1.7s infinite steps(2);
+}
+
+@keyframes rgbRed{
+    0%,90%,100%{clip-path:inset(0 0 0 0)}
+    92%{clip-path:inset(20% 0 60% 0)}
+    95%{clip-path:inset(70% 0 5% 0)}
+}
+
+@keyframes rgbBlue{
+    0%,88%,100%{clip-path:inset(0 0 0 0)}
+    90%{clip-path:inset(60% 0 10% 0)}
+    94%{clip-path:inset(10% 0 70% 0)}
+}
+
+/* =========================================================
+   BADGE
+========================================================= */
+
+.badge{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+
+    padding:8px 15px;
+
+    border:1px solid var(--border);
+    border-radius:100px;
+
+    color:#888;
+    font-size:9px;
+    letter-spacing:2px;
+
+    background:rgba(255,255,255,.025);
+
+    margin-bottom:25px;
+
+    animation:badgeFloat 3s ease-in-out infinite;
+}
+
+.badge i{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--lime);
+    box-shadow:0 0 15px var(--lime);
+    animation:badgePulse 1.5s infinite;
+}
+
+@keyframes badgeFloat{
+    50%{transform:translateY(-4px)}
+}
+
+@keyframes badgePulse{
+    50%{transform:scale(1.8);opacity:.5}
+}
+
+/* =========================================================
+   TYPEWRITER
+========================================================= */
+
+.typewriter{
+    margin-top:25px;
+    min-height:30px;
+
+    color:var(--lime);
+
+    font-family:Orbitron;
+    letter-spacing:2px;
+    font-size:13px;
+}
+
+.typewriter::after{
+    content:"";
+    display:inline-block;
+    width:2px;
+    height:16px;
+    background:var(--lime);
+    margin-left:4px;
+    animation:blink .6s infinite;
+}
+
+@keyframes blink{
+    50%{opacity:0}
+}
+
+/* =========================================================
+   MORPH
+========================================================= */
+
+.morph{
+    display:inline-block;
+    min-width:140px;
+    color:var(--cyan);
+    transition:.4s;
+}
+
+.morph.out{
+    opacity:0;
+    filter:blur(10px);
+    transform:scale(1.3) rotateX(70deg);
+}
+
+/* =========================================================
+   GRADIENT FLOW
+========================================================= */
+
+.gradient-flow{
+    background:
+        linear-gradient(
+            90deg,
+            var(--lime),
+            var(--cyan),
+            var(--pink),
+            var(--lime)
+        );
+    background-size:300% 100%;
+    -webkit-background-clip:text;
+    color:transparent;
+    animation:gradientFlow 5s linear infinite;
+}
+
+@keyframes gradientFlow{
+    to{
+        background-position:300% 0;
+    }
+}
+
+/* =========================================================
+   HERO DESCRIPTION
+========================================================= */
+
+.hero-description{
+    color:#888;
+    max-width:650px;
+    line-height:1.9;
+    font-size:14px;
+    margin:25px 0;
+}
+
+.hero-description strong{
+    color:var(--lime);
+}
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.btn{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+
+    padding:14px 20px;
+
+    border:1px solid var(--border);
+    border-radius:12px;
+
+    color:white;
+    font-size:11px;
+
+    position:relative;
+    overflow:hidden;
+
+    transition:.35s;
+}
+
+.btn::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        100deg,
+        transparent,
+        rgba(255,255,255,.3),
+        transparent
+    );
+    transform:translateX(-100%);
+}
+
+.btn:hover::before{
+    animation:buttonSweep .7s;
+}
+
+@keyframes buttonSweep{
+    to{transform:translateX(100%)}
+}
+
+.btn:hover{
+    transform:translateY(-5px);
+    border-color:var(--lime);
+    box-shadow:0 15px 40px rgba(216,255,62,.12);
+}
+
+.btn.primary{
+    background:var(--lime);
+    color:#050505;
+    font-weight:800;
+}
+
+/* =========================================================
+   PROFILE CLICK
+========================================================= */
+
+.profile-trigger{
+    cursor:pointer;
+    display:inline-block;
+    position:relative;
+}
+
+.profile-trigger::after{
+    content:"CLICK";
+    position:absolute;
+    right:-55px;
+    top:50%;
+    transform:translateY(-50%);
+    font-family:Orbitron;
+    font-size:7px;
+    letter-spacing:2px;
+    color:var(--lime);
+    opacity:.5;
+    animation:clickHint 1.5s infinite;
+}
+
+@keyframes clickHint{
+    50%{
+        opacity:1;
+        transform:translateY(-50%) translateX(5px);
+    }
+}
+
+/* =========================================================
+   PROFILE MODAL
+========================================================= */
+
+.profile-modal{
+    position:fixed;
+    inset:0;
+    z-index:9000;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(0,0,0,.82);
+    backdrop-filter:blur(20px);
+
+    opacity:0;
+    visibility:hidden;
+    transition:.5s;
+}
+
+.profile-modal.open{
+    opacity:1;
+    visibility:visible;
+}
+
+.profile-box{
+    width:min(700px,90%);
+    padding:15px;
+
+    border:1px solid rgba(216,255,62,.3);
+    border-radius:25px;
+
+    background:#090909;
+
+    transform:
+        scale(.6)
+        rotateX(60deg);
+
+    transition:.7s cubic-bezier(.2,.8,.2,1);
+
+    box-shadow:
+        0 0 100px rgba(216,255,62,.15);
+}
+
+.profile-modal.open .profile-box{
+    transform:
+        scale(1)
+        rotateX(0);
+}
+
+.profile-image-wrap{
+    position:relative;
+    overflow:hidden;
+    border-radius:18px;
+    aspect-ratio:16/10;
+    background:#111;
+}
+
+.profile-image-wrap img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+
+    transform:scale(1.2);
+    transition:1.2s;
+}
+
+.profile-modal.open img{
+    transform:scale(1);
+}
+
+.profile-image-wrap::after{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:
+        linear-gradient(
+            110deg,
+            transparent 20%,
+            rgba(216,255,62,.3),
+            transparent 70%
+        );
+
+    transform:translateX(-100%);
+    animation:profileShine 1.5s .3s forwards;
+}
+
+@keyframes profileShine{
+    to{transform:translateX(100%)}
+}
+
+.profile-info{
+    padding:20px 10px 5px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.profile-info h3{
+    font-family:Orbitron;
+}
+
+.profile-info span{
+    color:var(--lime);
+    font-size:10px;
+}
+
+.close-profile{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    border:1px solid var(--border);
+    background:#111;
+    color:white;
+    cursor:pointer;
+}
+
+/* =========================================================
+   PORTAL
+========================================================= */
+
+.portal-area{
+    min-height:550px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    perspective:1000px;
+}
+
+.portal{
+    width:250px;
+    height:250px;
+
+    border-radius:50%;
+
+    position:relative;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    cursor:pointer;
+
+    background:
+        radial-gradient(
+            circle at 35% 30%,
+            white 0%,
+            var(--lime) 5%,
+            rgba(216,255,62,.3) 25%,
+            transparent 68%
+        );
+
+    box-shadow:
+        0 0 50px rgba(216,255,62,.3),
+        0 0 150px rgba(216,255,62,.12);
+
+    transition:.2s;
+}
+
+.portal:hover{
+    box-shadow:
+        0 0 90px rgba(216,255,62,.5),
+        0 0 180px rgba(216,255,62,.2);
+}
+
+.portal-text{
+    color:#090909;
+    font-family:Orbitron;
+    font-weight:900;
+    text-align:center;
+    font-size:12px;
+}
+
+.portal-text small{
+    display:block;
+    font-family:Poppins;
+    font-size:7px;
+    margin-top:8px;
+}
+
+.ring{
+    position:absolute;
+    border:1px solid rgba(216,255,62,.3);
+    border-radius:50%;
+    pointer-events:none;
+}
+
+.ring.r1{
+    width:350px;
+    height:350px;
+    animation:spin 8s linear infinite;
+}
+
+.ring.r2{
+    width:450px;
+    height:170px;
+    transform:rotateX(70deg);
+    animation:spin2 6s linear infinite;
+}
+
+.ring.r3{
+    width:470px;
+    height:200px;
+    transform:rotateY(65deg);
+    animation:spin3 10s linear infinite;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+
+@keyframes spin2{
+    to{
+        transform:rotateX(70deg) rotateZ(360deg);
+    }
+}
+
+@keyframes spin3{
+    to{
+        transform:rotateY(65deg) rotateZ(-360deg);
+    }
+}
+
+/* =========================================================
+   SECTION HEADER
+========================================================= */
+
+.section-title{
+    margin-bottom:55px;
+    position:relative;
+}
+
+.section-title span{
+    color:var(--lime);
+    font-family:Orbitron;
+    font-size:9px;
+    letter-spacing:4px;
+}
+
+.section-title h2{
+    font-family:Orbitron;
+    font-size:clamp(32px,5vw,60px);
+    margin-top:10px;
+}
+
+/* =========================================================
+   ADVANCED WORD REVEAL
+========================================================= */
+
+.word-reveal span{
+    display:inline-block;
+    opacity:0;
+    transform:
+        translateY(40px)
+        rotateX(-70deg);
+    filter:blur(5px);
+    transition:
+        .7s cubic-bezier(.2,.8,.2,1);
+    margin-right:7px;
+}
+
+.word-reveal.active span{
+    opacity:1;
+    transform:
+        translateY(0)
+        rotateX(0);
+    filter:blur(0);
+}
+
+/* =========================================================
+   WAVE TEXT
+========================================================= */
+
+.wave span{
+    display:inline-block;
+    animation:wave 1.8s ease-in-out infinite;
+}
+
+@keyframes wave{
+    0%,100%{
+        transform:translateY(0) rotate(0);
+    }
+    50%{
+        transform:translateY(-16px) rotate(5deg);
+    }
+}
+
+/* =========================================================
+   3D FLIP
+========================================================= */
+
+.flip-word{
+    display:inline-block;
+    transform-style:preserve-3d;
+    animation:flip3d 4s ease-in-out infinite;
+}
+
+@keyframes flip3d{
+    0%,70%{
+        transform:rotateX(0);
+    }
+    80%{
+        transform:rotateX(180deg);
+    }
+    90%{
+        transform:rotateX(360deg);
+    }
+}
+
+/* =========================================================
+   NEON
+========================================================= */
+
+.neon{
+    color:var(--lime);
+    text-shadow:
+        0 0 5px var(--lime),
+        0 0 15px var(--lime),
+        0 0 40px var(--lime);
+    animation:neonPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes neonPulse{
+    to{
+        text-shadow:
+            0 0 10px var(--lime),
+            0 0 30px var(--lime),
+            0 0 70px var(--lime);
+    }
+}
+
+/* =========================================================
+   SCRAMBLE
+========================================================= */
+
+.scramble{
+    font-family:Orbitron;
+    color:var(--cyan);
+    letter-spacing:4px;
+}
+
+/* =========================================================
+   GLASS
+========================================================= */
+
+.glass{
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.065),
+            rgba(255,255,255,.018)
+        );
+
+    border:1px solid var(--border);
+
+    border-radius:24px;
+
+    backdrop-filter:blur(20px);
+
+    position:relative;
+
+    overflow:hidden;
+
+    transform-style:preserve-3d;
+
+    transition:
+        border-color .3s,
+        box-shadow .3s;
+}
+
+.glass::before{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:
+        radial-gradient(
+            250px circle at var(--card-x,50%) var(--card-y,50%),
+            rgba(216,255,62,.08),
+            transparent 70%
+        );
+
+    opacity:0;
+    transition:.3s;
+    pointer-events:none;
+}
+
+.glass:hover::before{
+    opacity:1;
+}
+
+.glass:hover{
+    border-color:rgba(216,255,62,.3);
+}
+
+/* =========================================================
+   MAGNETIC CARDS
+========================================================= */
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+}
+
+.card{
+    min-height:240px;
+    padding:28px;
+}
+
+.card-icon{
+    width:55px;
+    height:55px;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:16px;
+
+    color:var(--lime);
+
+    background:rgba(216,255,62,.05);
+
+    border:1px solid rgba(216,255,62,.15);
+
+    font-size:23px;
+
+    animation:iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat{
+    50%{
+        transform:
+            translateY(-8px)
+            rotate(5deg);
+    }
+}
+
+.card h3{
+    margin-top:22px;
+    font-size:18px;
+}
+
+.card p{
+    color:#888;
+    font-size:12px;
+    line-height:1.8;
+    margin-top:10px;
+}
+
+/* =========================================================
+   IMAGE SYSTEM
+========================================================= */
+
+.image-card{
+    min-height:430px;
+    overflow:hidden;
+    position:relative;
+    transform-style:preserve-3d;
+}
+
+.image-card img{
+    position:absolute;
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    filter:
+        grayscale(.5)
+        brightness(.5);
+
+    transition:
+        transform .7s cubic-bezier(.2,.8,.2,1),
+        filter .5s;
+}
+
+.image-card:hover img{
+    filter:
+        grayscale(0)
+        brightness(.72);
+}
+
+.image-card::after{
+    content:"";
+    position:absolute;
+    inset:0;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(0,0,0,.95),
+            transparent 70%
+        );
+}
+
+.image-content{
+    position:absolute;
+    left:25px;
+    right:25px;
+    bottom:25px;
+    z-index:5;
+}
+
+.image-content h3{
+    font-family:Orbitron;
+    font-size:23px;
+}
+
+.image-content p{
+    color:#bbb;
+    font-size:12px;
+    line-height:1.7;
+    margin-top:7px;
+}
+
+.image-label{
+    position:absolute;
+    left:20px;
+    top:20px;
+    z-index:5;
+
+    padding:7px 11px;
+
+    border-radius:100px;
+
+    background:rgba(0,0,0,.5);
+
+    border:1px solid rgba(255,255,255,.2);
+
+    backdrop-filter:blur(10px);
+
+    font-family:Orbitron;
+    font-size:8px;
+    letter-spacing:2px;
+}
+
+/* RGB IMAGE */
+.image-card.rgb-image::before,
+.image-card.rgb-image::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:3;
+    pointer-events:none;
+    mix-blend-mode:screen;
+    opacity:0;
+}
+
+.image-card.rgb-image:hover::before{
+    opacity:.5;
+    background:rgba(255,0,60,.15);
+    transform:translate(5px);
+    animation:imageGlitch .3s infinite;
+}
+
+.image-card.rgb-image:hover::after{
+    opacity:.5;
+    background:rgba(0,220,255,.15);
+    transform:translate(-5px);
+    animation:imageGlitch .25s infinite reverse;
+}
+
+@keyframes imageGlitch{
+    0%{clip-path:inset(0 0 80% 0)}
+    50%{clip-path:inset(40% 0 20% 0)}
+    100%{clip-path:inset(75% 0 0 0)}
+}
+
+/* =========================================================
+   CAROUSEL
+========================================================= */
+
+.carousel{
+    position:relative;
+    height:500px;
+    overflow:hidden;
+    border-radius:25px;
+}
+
+.carousel-track{
+    display:flex;
+    height:100%;
+    transition:transform .8s cubic-bezier(.2,.8,.2,1);
+}
+
+.carousel-slide{
+    min-width:100%;
+    position:relative;
+}
+
+.carousel-slide img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    filter:brightness(.55);
+}
+
+.carousel-slide::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(
+        to top,
+        #030303,
+        transparent 65%
+    );
+}
+
+.carousel-caption{
+    position:absolute;
+    left:35px;
+    bottom:35px;
+    z-index:3;
+}
+
+.carousel-caption h3{
+    font-family:Orbitron;
+    font-size:35px;
+}
+
+.carousel-caption p{
+    color:#aaa;
+    font-size:12px;
+}
+
+.carousel-buttons{
+    position:absolute;
+    right:25px;
+    bottom:25px;
+    z-index:5;
+    display:flex;
+    gap:8px;
+}
+
+.carousel-buttons button{
+    width:42px;
+    height:42px;
+    border:1px solid var(--border);
+    border-radius:50%;
+    background:rgba(0,0,0,.5);
+    color:white;
+    cursor:pointer;
+}
+
+/* =========================================================
+   SKILLS
+========================================================= */
+
+.skill-progress{
+    margin-top:30px;
+}
+
+.skill-row{
+    margin-bottom:22px;
+}
+
+.skill-head{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    margin-bottom:7px;
+}
+
+.skill-head span:last-child{
+    color:var(--lime);
+}
+
+.progress{
+    height:5px;
+    background:rgba(255,255,255,.07);
+    border-radius:100px;
+    overflow:hidden;
+}
+
+.progress-bar{
+    width:0%;
+    height:100%;
+    border-radius:100px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--lime),
+            var(--cyan)
+        );
+
+    box-shadow:
+        0 0 15px var(--lime);
+
+    transition:
+        width 1.5s cubic-bezier(.2,.8,.2,1);
+}
+
+/* =========================================================
+   TIMELINE
+========================================================= */
+
+.timeline{
+    position:relative;
+    max-width:850px;
+}
+
+.timeline::before{
+    content:"";
+    position:absolute;
+    left:14px;
+    top:0;
+    bottom:0;
+    width:1px;
+    background:
+        linear-gradient(
+            var(--lime),
+            transparent
+        );
+}
+
+.timeline-item{
+    position:relative;
+    padding-left:60px;
+    margin-bottom:65px;
+
+    opacity:0;
+    transform:translateX(-60px);
+    transition:
+        1s cubic-bezier(.2,.8,.2,1);
+}
+
+.timeline-item.show{
+    opacity:1;
+    transform:translateX(0);
+}
+
+.timeline-dot{
+    position:absolute;
+    left:7px;
+    top:5px;
+
+    width:15px;
+    height:15px;
+
+    border-radius:50%;
+
+    background:var(--lime);
+
+    box-shadow:
+        0 0 20px var(--lime);
+
+    animation:
+        timelinePulse 2s infinite;
+}
+
+@keyframes timelinePulse{
+    50%{
+        transform:scale(1.6);
+        opacity:.5;
+    }
+}
+
+.timeline-item small{
+    color:var(--lime);
+    font-family:Orbitron;
+    font-size:9px;
+    letter-spacing:3px;
+}
+
+.timeline-item h3{
+    font-size:23px;
+    margin:8px 0;
+}
+
+.timeline-item p{
+    color:#888;
+    font-size:13px;
+    line-height:1.8;
+}
+
+/* =========================================================
+   PROJECTS
+========================================================= */
+
+.projects{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
+
+.project{
+    padding:30px;
+    min-height:300px;
+    position:relative;
+}
+
+.project-number{
+    font-family:Orbitron;
+    color:var(--lime);
+    font-size:10px;
+}
+
+.project h3{
+    font-size:28px;
+    margin:45px 0 12px;
+}
+
+.project p{
+    color:#888;
+    font-size:13px;
+    line-height:1.8;
+}
+
+.tags{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:25px;
+}
+
+.tags span{
+    padding:6px 10px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    color:#999;
+    font-size:9px;
+}
+
+/* =========================================================
+   MARQUEE
+========================================================= */
+
+.marquee{
+    width:100vw;
+    margin-left:calc(50% - 50vw);
+
+    overflow:hidden;
+
+    border-top:1px solid var(--border);
+    border-bottom:1px solid var(--border);
+
+    padding:25px 0;
+
+    transform:rotate(-2deg);
+}
+
+.marquee-track{
+    width:max-content;
+
+    display:flex;
+    gap:45px;
+
+    animation:
+        marquee 25s linear infinite;
+}
+
+.marquee span{
+    font-family:Orbitron;
+    font-size:40px;
+    white-space:nowrap;
+    color:transparent;
+    -webkit-text-stroke:1px rgba(216,255,62,.5);
+}
+
+@keyframes marquee{
+    to{
+        transform:translateX(-50%);
+    }
+}
+
+/* =========================================================
+   QUOTE
+========================================================= */
+
+.quote-box{
+    text-align:center;
+    padding:80px 30px;
+}
+
+.quote-mark{
+    font-family:Georgia;
+    font-size:100px;
+    color:var(--lime);
+    line-height:.5;
+}
+
+.quote-text{
+    font-family:Orbitron;
+    font-size:clamp(20px,3vw,36px);
+    max-width:850px;
+    margin:30px auto;
+    min-height:100px;
+}
+
+.quote-author{
+    color:#777;
+    font-size:10px;
+    letter-spacing:3px;
+}
+
+/* =========================================================
+   CONTACT
+========================================================= */
+
+.contact{
+    text-align:center;
+    padding:110px 30px;
+}
+
+.contact h2{
+    font-family:Orbitron;
+    font-size:clamp(38px,7vw,85px);
+}
+
+.contact p{
+    max-width:600px;
+    margin:20px auto;
+    color:#888;
+    line-height:1.8;
+}
+
+/* =========================================================
+   REVEAL
+========================================================= */
+
+.reveal{
+    opacity:0;
+    transform:
+        translateY(70px)
+        scale(.96);
+    transition:
+        1s cubic-bezier(.2,.8,.2,1);
+}
+
+.reveal.show{
+    opacity:1;
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+/* =========================================================
+   FLOATING OBJECTS
+========================================================= */
+
+.floating-object{
+    position:absolute;
+    width:45px;
+    height:45px;
+    border:1px solid rgba(216,255,62,.2);
+    border-radius:10px;
+    transform-style:preserve-3d;
+    animation:objectFloat 6s ease-in-out infinite;
+}
+
+.floating-object.o1{
+    right:5%;
+    top:25%;
+}
+
+.floating-object.o2{
+    left:4%;
+    bottom:20%;
+    animation-delay:1s;
+}
+
+.floating-object.o3{
+    right:18%;
+    bottom:10%;
+    animation-delay:2s;
+}
+
+@keyframes objectFloat{
+    0%,100%{
+        transform:
+            translateY(0)
+            rotate(0deg);
+    }
+    50%{
+        transform:
+            translateY(-35px)
+            rotate(180deg);
+    }
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer{
+    text-align:center;
+    color:#555;
+    font-family:Orbitron;
+    font-size:9px;
+    letter-spacing:3px;
+    padding:50px 0;
+}
+
+/* =========================================================
+   RIPPLE
+========================================================= */
+
+.ripple{
+    position:fixed;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    border:1px solid var(--lime);
+    pointer-events:none;
+    z-index:9996;
+    transform:translate(-50%,-50%) scale(0);
+    animation:ripple .7s ease-out forwards;
+}
+
+@keyframes ripple{
+    to{
+        transform:
+            translate(-50%,-50%)
+            scale(15);
+        opacity:0;
+    }
+}
+
+/* =========================================================
+   SHOCKWAVE
+========================================================= */
+
+.shockwave{
+    position:fixed;
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    border:2px solid var(--cyan);
+    pointer-events:none;
+    z-index:9995;
+    transform:translate(-50%,-50%);
+    animation:shock .9s ease-out forwards;
+}
+
+@keyframes shock{
+    to{
+        width:500px;
+        height:500px;
+        opacity:0;
+    }
+}
+
+/* =========================================================
+   CLICK PARTICLE
+========================================================= */
+
+.click-particle{
+    position:fixed;
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:var(--lime);
+    pointer-events:none;
+    z-index:9996;
+    animation:particleFly .8s ease-out forwards;
+}
+
+@keyframes particleFly{
+    to{
+        transform:
+            translate(var(--dx),var(--dy))
+            scale(0);
+        opacity:0;
+    }
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:900px){
+
+    body{
+        cursor:auto;
+    }
+
+    .cursor,
+    .cursor-dot{
+        display:none;
+    }
+
+    .hero{
+        grid-template-columns:1fr;
+    }
+
+    .hero-title{
+        white-space:normal;
+        letter-spacing:-2px;
+    }
+
+    .portal-area{
+        min-height:400px;
+    }
+
+    .cards{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .projects{
+        grid-template-columns:1fr;
+    }
+
+    nav ul{
+        display:none;
+    }
+
+    .logo{
+        margin:auto;
+    }
+}
+
+@media(max-width:600px){
+
+    main{
+        width:90%;
+    }
+
+    section{
+        padding-top:120px;
+    }
+
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .hero-title{
+        font-size:42px;
+    }
+
+    .portal{
+        width:190px;
+        height:190px;
+    }
+
+    .ring.r1{
+        width:270px;
+        height:270px;
+    }
+
+    .ring.r2{
+        width:330px;
+    }
+
+    .ring.r3{
+        width:350px;
+    }
+
+    .carousel{
+        height:380px;
+    }
+
+    .marquee span{
+        font-size:27px;
+    }
+
+    .floating-object{
+        display:none;
+    }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+    *,
+    *::before,
+    *::after{
+        animation-duration:.001ms !important;
+        animation-iteration-count:1 !important;
+        scroll-behavior:auto !important;
+        transition-duration:.001ms !important;
+    }
+
+    body::after,
+    .scanlines,
+    .grid-bg,
+    #space{
+        display:none;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     BACKGROUND
+===================================================== -->
+
+<canvas id="space"></canvas>
+
+<div class="grid-bg"></div>
+
+<div class="scanlines"></div>
+
+<div class="spotlight"></div>
+
+<div class="blob one"></div>
+<div class="blob two"></div>
+<div class="blob three"></div>
+
+<div class="energy e1"></div>
+<div class="energy e2"></div>
+<div class="energy e3"></div>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+
+<div class="scroll-energy" id="scrollEnergy"></div>
+
+
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
+
+<div class="nav-wrap" id="navWrap">
+
+<nav id="navbar">
+
+    <div class="nav-handle" id="navHandle">
+        <span>⋮⋮</span>
+        <small>DRAG</small>
+    </div>
+
+    <div class="logo">
+        ELAVARASAN<span>.</span>
+    </div>
+
+    <ul>
+
+        <li>
+            <a href="#home">HOME</a>
+        </li>
+
+        <li>
+            <a href="#about">ABOUT</a>
+        </li>
+
+        <li>
+            <a href="#skills">SKILLS</a>
+        </li>
+
+        <li>
+            <a href="#martial">MARTIAL</a>
+        </li>
+
+        <li>
+            <a href="#journey">JOURNEY</a>
+        </li>
+
+        <li>
+            <a href="#projects">PROJECTS</a>
+        </li>
+
+    </ul>
+
+</nav>
+
+</div>
+
+
+<!-- =====================================================
+     PROFILE MODAL
+===================================================== -->
+
+<div class="profile-modal" id="profileModal">
+
+    <div class="profile-box">
+
+        <div class="profile-image-wrap">
+
+            <!-- PUT YOUR 2ND PHOTO AS profile.jpg -->
+
+            <img
+                src="profile.jpg"
+                alt="Elavarasan">
+
+        </div>
+
+        <div class="profile-info">
+
+            <div>
+                <h3>ELAVARASAN</h3>
+                <span>DIGITAL DOJO / CREATOR</span>
+            </div>
+
+            <button
+                class="close-profile"
+                id="closeProfile">
+                ×
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<main>
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="hero" id="home">
+
+<div class="hero-text reveal">
+
+    <div class="badge">
+        <i></i>
+        DIGITAL DOJO / ONLINE
+    </div>
+
+
+    <!-- CLICK THIS NAME -->
+
+    <h1
+        class="hero-title profile-trigger"
+        id="profileTrigger">
+
+        <span
+            id="nameReveal">
+            ELAVARASAN
+        </span>
+
+        <br>
+
+        <span
+            class="outline rgb"
+            data-text="BEYOND LIMITS">
+
+            BEYOND LIMITS
+
+        </span>
+
+    </h1>
+
+
+    <div class="typewriter" id="typewriter"></div>
+
+
+    <p class="hero-description">
+
+        I build digital experiences,
+        explore technology and train the
+        <strong>body + mind</strong> with
+        discipline.
+
+        <span class="morph" id="morph">
+            DEVELOPER
+        </span>
+
+    </p>
+
+
+    <a href="#projects" class="btn primary">
+        ENTER MY WORLD →
+    </a>
+
+</div>
+
+
+<!-- PORTAL -->
+
+<div class="portal-area reveal">
+
+    <div class="floating-object o1"></div>
+    <div class="floating-object o2"></div>
+    <div class="floating-object o3"></div>
+
+    <div class="ring r1"></div>
+    <div class="ring r2"></div>
+    <div class="ring r3"></div>
+
+    <div class="portal" id="portal">
+
+        <div class="portal-text">
+
+            WHO AM I?
+
+            <small>
+                CLICK / MOVE
+            </small>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     ADVANCED TEXT LAB
+===================================================== -->
+
+<section id="about">
+
+<div class="section-title reveal">
+
+    <span>01 / TEXT ENGINE</span>
+
+    <h2 class="word-reveal">
+        ADVANCED TEXT MOTION
+    </h2>
+
+</div>
+
+
+<div class="glass quote-box reveal">
+
+    <div class="quote-mark">“</div>
+
+    <div
+        class="quote-text"
+        id="quoteText">
+    </div>
+
+    <div
+        class="quote-author"
+        id="quoteAuthor">
+        DIGITAL DOJO
+    </div>
+
+</div>
+
+
+<br><br>
+
+
+<div class="cards">
+
+    <div class="glass card reveal">
+
+        <div class="card-icon">A</div>
+
+        <h3>Character Reveal</h3>
+
+        <p>
+            Every character enters independently
+            using 3D rotation and blur.
+        </p>
+
+    </div>
+
+
+    <div class="glass card reveal">
+
+        <div class="card-icon">W</div>
+
+        <h3 class="wave-text">
+            Wave Motion
+        </h3>
+
+        <p>
+            Characters move vertically
+            in a continuous wave.
+        </p>
+
+    </div>
+
+
+    <div class="glass card reveal">
+
+        <div class="card-icon">3D</div>
+
+        <h3 class="flip-word">
+            3D FLIP
+        </h3>
+
+        <p>
+            Perspective-based 3D text rotation.
+        </p>
+
+    </div>
+
+
+    <div class="glass card reveal">
+
+        <div class="card-icon">N</div>
+
+        <h3 class="neon">
+            NEON PULSE
+        </h3>
+
+        <p>
+            Dynamic glowing text with
+            animated intensity.
+        </p>
+
+    </div>
+
+</div>
+
+
+<br><br>
+
+
+<div class="glass card reveal">
+
+    <h3 class="gradient-flow">
+        GRADIENT FLOW / MOVING COLOR / DIGITAL ENERGY
+    </h3>
+
+    <p>
+        Continuous gradient movement creates
+        a cinematic animated text surface.
+    </p>
+
+</div>
+
+
+<br><br>
+
+
+<div class="glass card reveal">
+
+    <h3 id="scrambleText" class="scramble">
+        TEXT SCRAMBLE
+    </h3>
+
+    <p>
+        Random characters resolve into the final
+        word automatically.
+    </p>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     MARQUEE
+===================================================== -->
+
+<div class="marquee">
+
+<div class="marquee-track">
+
+    <span>CREATE</span>
+    <span>BUILD</span>
+    <span>TRAIN</span>
+    <span>LEARN</span>
+    <span>EXPLORE</span>
+    <span>EVOLVE</span>
+
+    <span>CREATE</span>
+    <span>BUILD</span>
+    <span>TRAIN</span>
+    <span>LEARN</span>
+    <span>EXPLORE</span>
+    <span>EVOLVE</span>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     SKILLS
+===================================================== -->
+
+<section id="skills">
+
+<div class="section-title reveal">
+
+    <span>02 / CREATION</span>
+
+    <h2 class="gradient-flow">
+        MY TOOLBOX
+    </h2>
+
+</div>
+
+
+<div class="cards">
+
+    <div class="glass card magnetic reveal">
+
+        <div class="card-icon">⌘</div>
+
+        <h3>Frontend</h3>
+
+        <p>
+            HTML · CSS · JavaScript · React ·
+            Vite · Next.js
+        </p>
+
+    </div>
+
+
+    <div class="glass card magnetic reveal">
+
+        <div class="card-icon">◈</div>
+
+        <h3>Backend</h3>
+
+        <p>
+            Node.js · FastAPI · Spring Boot ·
+            REST APIs
+        </p>
+
+    </div>
+
+
+    <div class="glass card magnetic reveal">
+
+        <div class="card-icon">◉</div>
+
+        <h3>Database</h3>
+
+        <p>
+            MySQL · PostgreSQL · SQL Server ·
+            Supabase
+        </p>
+
+    </div>
+
+
+    <div class="glass card magnetic reveal">
+
+        <div class="card-icon">⚡</div>
+
+        <h3>DevOps</h3>
+
+        <p>
+            Linux · Docker · GitHub · VPS ·
+            Coolify
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="glass card skill-progress reveal">
+
+    <div class="skill-row">
+
+        <div class="skill-head">
+            <span>HTML / CSS</span>
+            <span>95%</span>
+        </div>
+
+        <div class="progress">
+            <div
+                class="progress-bar"
+                data-width="95">
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="skill-row">
+
+        <div class="skill-head">
+            <span>JavaScript</span>
+            <span>90%</span>
+        </div>
+
+        <div class="progress">
+            <div
+                class="progress-bar"
+                data-width="90">
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="skill-row">
+
+        <div class="skill-head">
+            <span>React</span>
+            <span>85%</span>
+        </div>
+
+        <div class="progress">
+            <div
+                class="progress-bar"
+                data-width="85">
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="skill-row">
+
+        <div class="skill-head">
+            <span>Docker / Linux</span>
+            <span>80%</span>
+        </div>
+
+        <div class="progress">
+            <div
+                class="progress-bar"
+                data-width="80">
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     MARTIAL
+===================================================== -->
+
+<section id="martial">
+
+<div class="section-title reveal">
+
+    <span>03 / DISCIPLINE</span>
+
+    <h2 class="word-reveal">
+        MARTIAL ARTS
+    </h2>
+
+</div>
+
+
+<div class="cards">
+
+    <div class="glass image-card rgb-image reveal">
+
+        <img
+            src="https://media.newindianexpress.com/newindianexpress%2F2025-08-31%2Flkfi0iuj%2Fforwa.jpg?auto=format%2Ccompress&w=640">
+
+        <div class="image-label">
+            01 / SILAMBAM
+        </div>
+
+        <div class="image-content">
+
+            <h3>SILAMBAM</h3>
+
+            <p>
+                Traditional Tamil martial art
+                based on speed, movement,
+                coordination and discipline.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="glass image-card rgb-image reveal">
+
+        <img
+            src="https://www.kazumi-dojo.jp/img/shinmaruko/trainee01.jpg">
+
+        <div class="image-label">
+            02 / KARATE
+        </div>
+
+        <div class="image-content">
+
+            <h3>KARATE</h3>
+
+            <p>
+                Technique, balance, timing,
+                control and continuous practice.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="glass image-card rgb-image reveal">
+
+        <img
+            src="https://images.livemint.com/rf/Image-621x414/LiveMint/Period2/2016/04/16/Photos/sil1-k0i--621x414%40LiveMint.jpg">
+
+        <div class="image-label">
+            03 / FITNESS
+        </div>
+
+        <div class="image-content">
+
+            <h3>FITNESS</h3>
+
+            <p>
+                Running, skipping, calisthenics,
+                yoga, gymnastics and kickboxing.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     IMAGE CAROUSEL
+===================================================== -->
+
+<section>
+
+<div class="section-title reveal">
+
+    <span>04 / VISUAL ENGINE</span>
+
+    <h2 class="gradient-flow">
+        IMAGE MOTION
+    </h2>
+
+</div>
+
+
+<div class="carousel glass reveal" id="carousel">
+
+<div class="carousel-track" id="carouselTrack">
+
+    <div class="carousel-slide">
+
+        <img src="https://media.newindianexpress.com/newindianexpress%2F2025-08-31%2Flkfi0iuj%2Fforwa.jpg?auto=format%2Ccompress&w=640">
+
+        <div class="carousel-caption">
+
+            <h3>SILAMBAM</h3>
+            <p>Motion / Discipline / Tradition</p>
+
+        </div>
+
+    </div>
+
+
+    <div class="carousel-slide">
+
+        <img src="https://www.kazumi-dojo.jp/img/shinmaruko/trainee01.jpg">
+
+        <div class="carousel-caption">
+
+            <h3>KARATE</h3>
+            <p>Control / Technique / Focus</p>
+
+        </div>
+
+    </div>
+
+
+    <div class="carousel-slide">
+
+        <img src="https://images.livemint.com/rf/Image-621x414/LiveMint/Period2/2016/04/16/Photos/sil1-k0i--621x414%40LiveMint.jpg">
+
+        <div class="carousel-caption">
+
+            <h3>FITNESS</h3>
+            <p>Strength / Energy / Consistency</p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="carousel-buttons">
+
+    <button id="prev">←</button>
+    <button id="next">→</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     JOURNEY
+===================================================== -->
+
+<section id="journey">
+
+<div class="section-title reveal">
+
+    <span>05 / JOURNEY</span>
+
+    <h2>
+        <span class="neon">
+            THE JOURNEY
+        </span>
+    </h2>
+
+</div>
+
+
+<div class="timeline">
+
+    <div class="timeline-item">
+
+        <div class="timeline-dot"></div>
+
+        <small>EDUCATION</small>
+
+        <h3>
+            B.E. Computer Science & Engineering
+        </h3>
+
+        <p>
+            Building foundations in programming,
+            software development, databases and
+            computer systems.
+        </p>
+
+    </div>
+
+
+    <div class="timeline-item">
+
+        <div class="timeline-dot"></div>
+
+        <small>TECHNOLOGY</small>
+
+        <h3>
+            Full Stack + DevOps
+        </h3>
+
+        <p>
+            Exploring Linux, Docker, cloud
+            deployment, APIs, AI, IoT and
+            modern web development.
+        </p>
+
+    </div>
+
+
+    <div class="timeline-item">
+
+        <div class="timeline-dot"></div>
+
+        <small>DISCIPLINE</small>
+
+        <h3>
+            Martial Arts & Fitness
+        </h3>
+
+        <p>
+            Training and sharing knowledge
+            through martial arts and fitness.
+        </p>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     PROJECTS
+===================================================== -->
+
+<section id="projects">
+
+<div class="section-title reveal">
+
+    <span>06 / EXPERIMENTS</span>
+
+    <h2 class="word-reveal">
+        WHAT I BUILD
+    </h2>
+
+</div>
+
+
+<div class="projects">
+
+
+    <div class="glass project magnetic reveal">
+
+        <div class="project-number">
+            PROJECT 01
+        </div>
+
+        <h3>
+            Smart Perfume Vending
+        </h3>
+
+        <p>
+            Web interface + digital payment +
+            Raspberry Pi + automated perfume
+            dispensing.
+        </p>
+
+        <div class="tags">
+            <span>HTML</span>
+            <span>JavaScript</span>
+            <span>Raspberry Pi</span>
+            <span>Razorpay</span>
+        </div>
+
+    </div>
+
+
+    <div class="glass project magnetic reveal">
+
+        <div class="project-number">
+            PROJECT 02
+        </div>
+
+        <h3>
+            IoT RiverWatch
+        </h3>
+
+        <p>
+            Environmental monitoring concept
+            using IoT sensors and a dashboard
+            for collected measurements.
+        </p>
+
+        <div class="tags">
+            <span>ESP32</span>
+            <span>IoT</span>
+            <span>Sensors</span>
+            <span>Dashboard</span>
+        </div>
+
+    </div>
+
+
+    <div class="glass project magnetic reveal">
+
+        <div class="project-number">
+            PROJECT 03
+        </div>
+
+        <h3>
+            Digital Motion Lab
+        </h3>
+
+        <p>
+            Experimental collection of text,
+            image, particle, scroll and
+            interaction animations.
+        </p>
+
+        <div class="tags">
+            <span>CSS</span>
+            <span>JavaScript</span>
+            <span>Motion</span>
+            <span>WebGL Style</span>
+        </div>
+
+    </div>
+
+
+    <div class="glass project magnetic reveal">
+
+        <div class="project-number">
+            PROJECT 04
+        </div>
+
+        <h3>
+            Endora Innovation
+        </h3>
+
+        <p>
+            Product experiments combining
+            software, hardware, automation
+            and practical technology.
+        </p>
+
+        <div class="tags">
+            <span>Innovation</span>
+            <span>AI</span>
+            <span>IoT</span>
+            <span>Software</span>
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     FINAL
+===================================================== -->
+
+<section>
+
+<div class="glass contact reveal">
+
+    <h2 class="rgb" data-text="LET'S BUILD.">
+        LET'S BUILD.
+    </h2>
+
+    <p>
+        Developer by mind.<br>
+        Martial artist by discipline.<br>
+        Entrepreneur by ambition.
+    </p>
+
+    <a
+        href="mailto:your@email.com"
+        class="btn primary">
+
+        START A CONVERSATION →
+
+    </a>
+
+</div>
+
+</section>
+
+
+<footer>
+
+    © 2026 ELAVARASAN · DIGITAL DOJO
+
+</footer>
+
+</main>
+
+
+<script>
+
+/* =========================================================
+   BASIC ELEMENTS
+========================================================= */
+
+const root = document.documentElement;
+
+const cursor =
+document.getElementById("cursor");
+
+const cursorDot =
+document.getElementById("cursorDot");
+
+
+/* =========================================================
+   MOUSE SYSTEM
+========================================================= */
+
+let mouseX = innerWidth/2;
+let mouseY = innerHeight/2;
+
+let smoothX = mouseX;
+let smoothY = mouseY;
+
+
+document.addEventListener("mousemove",e=>{
+
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+
+    root.style.setProperty(
+        "--mx",
+        mouseX+"px"
+    );
+
+    root.style.setProperty(
+        "--my",
+        mouseY+"px"
+    );
+
+});
+
+
+function cursorLoop(){
+
+    smoothX +=
+        (mouseX-smoothX)*.18;
+
+    smoothY +=
+        (mouseY-smoothY)*.18;
+
+    cursor.style.left =
+        smoothX+"px";
+
+    cursor.style.top =
+        smoothY+"px";
+
+    cursorDot.style.left =
+        mouseX+"px";
+
+    cursorDot.style.top =
+        mouseY+"px";
+
+    requestAnimationFrame(cursorLoop);
+
+}
+
+cursorLoop();
+
+
+/* =========================================================
+   CURSOR HOVER
+========================================================= */
+
+document
+.querySelectorAll("a,button,.card,.image-card,.profile-trigger,.portal")
+.forEach(el=>{
+
+    el.addEventListener("mouseenter",()=>{
+        cursor.classList.add("active");
+    });
+
+    el.addEventListener("mouseleave",()=>{
+        cursor.classList.remove("active");
+    });
+
+});
+
+
+/* =========================================================
+   CLICK RIPPLE + SHOCKWAVE + PARTICLES + SOUND
+========================================================= */
+
+let audioContext;
+
+
+function getAudio(){
+
+    if(!audioContext){
+
+        audioContext =
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
+
+    }
+
+    return audioContext;
+
+}
+
+
+function clickSound(){
+
+    try{
+
+        const audio =
+            getAudio();
+
+        const oscillator =
+            audio.createOscillator();
+
+        const gain =
+            audio.createGain();
+
+        oscillator.type =
+            "sine";
+
+        oscillator.frequency.setValueAtTime(
+            180 + Math.random()*300,
+            audio.currentTime
+        );
+
+        oscillator.frequency.exponentialRampToValueAtTime(
+            70,
+            audio.currentTime+.25
+        );
+
+        gain.gain.setValueAtTime(
+            .05,
+            audio.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            .001,
+            audio.currentTime+.25
+        );
+
+        oscillator.connect(gain);
+        gain.connect(audio.destination);
+
+        oscillator.start();
+        oscillator.stop(
+            audio.currentTime+.25
+        );
+
+    }
+    catch(e){}
+
+}
+
+
+document.addEventListener("click",e=>{
+
+    /* ripple */
+
+    const ripple =
+        document.createElement("div");
+
+    ripple.className="ripple";
+
+    ripple.style.left =
+        e.clientX+"px";
+
+    ripple.style.top =
+        e.clientY+"px";
+
+    document.body.appendChild(ripple);
+
+    setTimeout(
+        ()=>ripple.remove(),
+        800
+    );
+
+
+    /* shockwave */
+
+    const shock =
+        document.createElement("div");
+
+    shock.className="shockwave";
+
+    shock.style.left =
+        e.clientX+"px";
+
+    shock.style.top =
+        e.clientY+"px";
+
+    document.body.appendChild(shock);
+
+    setTimeout(
+        ()=>shock.remove(),
+        1000
+    );
+
+
+    /* particles */
+
+    for(let i=0;i<18;i++){
+
+        const p =
+            document.createElement("div");
+
+        p.className =
+            "click-particle";
+
+        p.style.left =
+            e.clientX+"px";
+
+        p.style.top =
+            e.clientY+"px";
+
+        const angle =
+            Math.random()*Math.PI*2;
+
+        const distance =
+            40+Math.random()*130;
+
+        p.style.setProperty(
+            "--dx",
+            Math.cos(angle)*distance+"px"
+        );
+
+        p.style.setProperty(
+            "--dy",
+            Math.sin(angle)*distance+"px"
+        );
+
+        document.body.appendChild(p);
+
+        setTimeout(
+            ()=>p.remove(),
+            900
+        );
+
+    }
+
+
+    clickSound();
+
+});
+
+
+/* =========================================================
+   CHARACTER REVEAL
+========================================================= */
+
+const nameReveal =
+document.getElementById("nameReveal");
+
+const nameText =
+nameReveal.textContent.trim();
+
+nameReveal.innerHTML="";
+
+[...nameText].forEach(
+(char,index)=>{
+
+    const span =
+        document.createElement("span");
+
+    span.className="char";
+
+    span.textContent=char;
+
+    span.style.animationDelay =
+        `${index*.07}s`;
+
+    nameReveal.appendChild(span);
+
+});
+
+
+/* =========================================================
+   TYPEWRITER
+========================================================= */
+
+const typewriter =
+document.getElementById("typewriter");
+
+const typingWords = [
+    "I BUILD.",
+    "I CREATE.",
+    "I TRAIN.",
+    "I EXPLORE.",
+    "I LEARN.",
+    "I EVOLVE."
+];
+
+let typeIndex=0;
+let typeChar=0;
+let deleting=false;
+
+
+function typeLoop(){
+
+    const word =
+        typingWords[typeIndex];
+
+    if(!deleting){
+
+        typewriter.textContent =
+            word.substring(
+                0,
+                typeChar+1
+            );
+
+        typeChar++;
+
+        if(typeChar >= word.length){
+
+            deleting=true;
+
+            setTimeout(
+                typeLoop,
+                1000
+            );
+
+            return;
+        }
+
+    }
+    else{
+
+        typewriter.textContent =
+            word.substring(
+                0,
+                typeChar-1
+            );
+
+        typeChar--;
+
+        if(typeChar<=0){
+
+            deleting=false;
+
+            typeIndex =
+                (typeIndex+1)
+                %
+                typingWords.length;
+
+        }
+
+    }
+
+    setTimeout(
+        typeLoop,
+        deleting ? 45 : 85
+    );
+
+}
+
+typeLoop();
+
+
+/* =========================================================
+   MORPHING TEXT
+========================================================= */
+
+const morph =
+document.getElementById("morph");
+
+const morphWords=[
+    "DEVELOPER",
+    "CREATOR",
+    "ATHLETE",
+    "FOUNDER",
+    "PRACTITIONER",
+    "EXPLORER"
+];
+
+let morphIndex=0;
+
+
+setInterval(()=>{
+
+    morph.classList.add("out");
+
+    setTimeout(()=>{
+
+        morphIndex =
+            (morphIndex+1)
+            %
+            morphWords.length;
+
+        morph.textContent =
+            morphWords[morphIndex];
+
+        morph.classList.remove("out");
+
+    },400);
+
+},2200);
+
+
+/* =========================================================
+   SCRAMBLE TEXT
+========================================================= */
+
+const scramble =
+document.getElementById("scrambleText");
+
+const finalText =
+"TEXT SCRAMBLE";
+
+const chars =
+"!<>-_\\/[]{}—=+*^?#________";
+
+function scrambleLoop(){
+
+    let iteration=0;
+
+    const timer =
+        setInterval(()=>{
+
+            scramble.textContent =
+                finalText
+                .split("")
+                .map(
+                (char,index)=>{
+
+                    if(index < iteration){
+
+                        return finalText[index];
+
+                    }
+
+                    return chars[
+                        Math.floor(
+                            Math.random() *
+                            chars.length
+                        )
+                    ];
+
+                })
+                .join("");
+
+            if(iteration >= finalText.length){
+
+                clearInterval(timer);
+
+            }
+
+            iteration += .45;
+
+        },35);
+
+}
+
+setInterval(
+    scrambleLoop,
+    3500
+);
+
+scrambleLoop();
+
+
+/* =========================================================
+   WAVE TEXT
+========================================================= */
+
+document
+.querySelectorAll(".wave-text")
+.forEach(el=>{
+
+    const text =
+        el.textContent;
+
+    el.innerHTML="";
+
+    [...text].forEach(
+    (char,index)=>{
+
+        const span =
+            document.createElement("span");
+
+        span.textContent =
+            char===" "
+            ? "\u00A0"
+            : char;
+
+        span.style.animationDelay =
+            `${index*.08}s`;
+
+        el.appendChild(span);
+
+    });
+
+});
+
+
+/* =========================================================
+   WORD REVEAL
+========================================================= */
+
+document
+.querySelectorAll(".word-reveal")
+.forEach(el=>{
+
+    const text =
+        el.textContent.trim();
+
+    el.innerHTML="";
+
+    text.split(" ").forEach(
+    (word,index)=>{
+
+        const span =
+            document.createElement("span");
+
+        span.textContent=word;
+
+        span.style.transitionDelay =
+            `${index*.12}s`;
+
+        el.appendChild(span);
+
+    });
+
+});
+
+
+/* =========================================================
+   REVEAL OBSERVER
+========================================================= */
+
+const revealObserver =
+new IntersectionObserver(
+entries=>{
+
+    entries.forEach(entry=>{
+
+        if(entry.isIntersecting){
+
+            entry.target.classList.add("show");
+
+        }
+
+    });
+
+},
+{
+    threshold:.15
+});
+
+
+document
+.querySelectorAll(".reveal,.word-reveal")
+.forEach(el=>{
+
+    revealObserver.observe(el);
+
+});
+
+
+/* =========================================================
+   SKILL PROGRESS
+========================================================= */
+
+const progressObserver =
+new IntersectionObserver(
+entries=>{
+
+    entries.forEach(entry=>{
+
+        if(entry.isIntersecting){
+
+            entry.target
+            .querySelectorAll(".progress-bar")
+            .forEach(bar=>{
+
+                bar.style.width =
+                    bar.dataset.width+"%";
+
+            });
+
+        }
+
+    });
+
+},
+{
+    threshold:.4
+});
+
+
+document
+.querySelectorAll(".skill-progress")
+.forEach(el=>{
+    progressObserver.observe(el);
+});
+
+
+/* =========================================================
+   TIMELINE
+========================================================= */
+
+const timelineObserver =
+new IntersectionObserver(
+entries=>{
+
+    entries.forEach(entry=>{
+
+        if(entry.isIntersecting){
+
+            entry.target.classList.add("show");
+
+        }
+
+    });
+
+},
+{
+    threshold:.2
+});
+
+
+document
+.querySelectorAll(".timeline-item")
+.forEach(el=>{
+    timelineObserver.observe(el);
+});
+
+
+/* =========================================================
+   MAGNETIC / 3D CARDS
+========================================================= */
+
+document
+.querySelectorAll(".magnetic,.glass")
+.forEach(card=>{
+
+    card.addEventListener(
+        "mousemove",
+        e=>{
+
+            const rect =
+                card.getBoundingClientRect();
+
+            const x =
+                e.clientX -
+                rect.left;
+
+            const y =
+                e.clientY -
+                rect.top;
+
+            const px =
+                x/rect.width;
+
+            const py =
+                y/rect.height;
+
+            const rotateX =
+                (py-.5)*-8;
+
+            const rotateY =
+                (px-.5)*8;
+
+            const moveX =
+                (px-.5)*10;
+
+            const moveY =
+                (py-.5)*10;
+
+            card.style.setProperty(
+                "--card-x",
+                x+"px"
+            );
+
+            card.style.setProperty(
+                "--card-y",
+                y+"px"
+            );
+
+            card.style.transform=`
+                perspective(900px)
+                rotateX(${rotateX}deg)
+                rotateY(${rotateY}deg)
+                translate3d(${moveX}px,${moveY}px,0)
+            `;
+
+        });
+
+    card.addEventListener(
+        "mouseleave",
+        ()=>{
+
+            card.style.transform=
+                "perspective(900px) rotateX(0) rotateY(0) translate3d(0,0,0)";
+
+        });
+
+});
+
+
+/* =========================================================
+   IMAGE PARALLAX
+========================================================= */
+
+document
+.querySelectorAll(".image-card")
+.forEach(card=>{
+
+    const img =
+        card.querySelector("img");
+
+    card.addEventListener(
+        "mousemove",
+        e=>{
+
+            const rect =
+                card.getBoundingClientRect();
+
+            const x =
+                e.clientX -
+                rect.left;
+
+            const y =
+                e.clientY -
+                rect.top;
+
+            const rx =
+                (y/rect.height-.5)*-12;
+
+            const ry =
+                (x/rect.width-.5)*12;
+
+            const px =
+                (x/rect.width-.5)*20;
+
+            const py =
+                (y/rect.height-.5)*20;
+
+            card.style.transform=`
+                perspective(1000px)
+                rotateX(${rx}deg)
+                rotateY(${ry}deg)
+            `;
+
+            img.style.transform=`
+                translate(${px}px,${py}px)
+                scale(1.12)
+            `;
+
+        });
+
+    card.addEventListener(
+        "mouseleave",
+        ()=>{
+
+            card.style.transform=
+                "perspective(1000px) rotateX(0) rotateY(0)";
+
+            img.style.transform=
+                "translate(0,0) scale(1)";
+
+        });
+
+});
+
+
+/* =========================================================
+   DRAGGABLE NAVBAR
+========================================================= */
+
+const navWrap =
+document.getElementById("navWrap");
+
+const navHandle =
+document.getElementById("navHandle");
+
+let dragging=false;
+
+let dragStartX=0;
+let dragStartY=0;
+
+let navStartX=0;
+let navStartY=0;
+
+
+navHandle.addEventListener(
+"pointerdown",
+e=>{
+
+    dragging=true;
+
+    navHandle.setPointerCapture(
+        e.pointerId
+    );
+
+    const rect =
+        navWrap.getBoundingClientRect();
+
+    dragStartX=e.clientX;
+    dragStartY=e.clientY;
+
+    navStartX=rect.left;
+    navStartY=rect.top;
+
+    navWrap.style.left =
+        navStartX+"px";
+
+    navWrap.style.top =
+        navStartY+"px";
+
+    navWrap.style.transform=
+        "none";
+
+});
+
+
+navHandle.addEventListener(
+"pointermove",
+e=>{
+
+    if(!dragging)return;
+
+    let x =
+        navStartX +
+        e.clientX -
+        dragStartX;
+
+    let y =
+        navStartY +
+        e.clientY -
+        dragStartY;
+
+    x=Math.max(
+        0,
+        Math.min(
+            x,
+            innerWidth-navWrap.offsetWidth
+        )
+    );
+
+    y=Math.max(
+        0,
+        Math.min(
+            y,
+            innerHeight-navWrap.offsetHeight
+        )
+    );
+
+    navWrap.style.left =
+        x+"px";
+
+    navWrap.style.top =
+        y+"px";
+
+});
+
+
+navHandle.addEventListener(
+"pointerup",
+e=>{
+
+    dragging=false;
+
+    try{
+        navHandle.releasePointerCapture(
+            e.pointerId
+        );
+    }catch(err){}
+
+});
+
+
+/* =========================================================
+   PORTAL
+========================================================= */
+
+const portal =
+document.getElementById("portal");
+
+let portalPower=1;
+
+
+portal.addEventListener(
+"mousemove",
+e=>{
+
+    const rect =
+        portal.getBoundingClientRect();
+
+    const x =
+        e.clientX -
+        rect.left;
+
+    const y =
+        e.clientY -
+        rect.top;
+
+    const rx =
+        (y/rect.height-.5)*-20;
+
+    const ry =
+        (x/rect.width-.5)*20;
+
+    portal.style.transform=`
+        perspective(600px)
+        rotateX(${rx}deg)
+        rotateY(${ry}deg)
+        scale(1.05)
+    `;
+
+});
+
+
+portal.addEventListener(
+"mouseleave",
+()=>{
+
+    portal.style.transform=
+        "perspective(600px) rotateX(0) rotateY(0) scale(1)";
+
+});
+
+
+portal.addEventListener(
+"click",
+()=>{
+
+    portal.animate(
+    [
+        {
+            transform:"scale(1)"
+        },
+        {
+            transform:"scale(1.8)",
+            filter:"brightness(3)"
+        },
+        {
+            transform:"scale(.5)",
+            opacity:.2
+        },
+        {
+            transform:"scale(1)"
+        }
+    ],
+    {
+        duration:1000,
+        easing:"cubic-bezier(.2,.8,.2,1)"
+    });
+
+});
+
+
+/* =========================================================
+   SCROLL SYSTEM
+========================================================= */
+
+let lastScroll =
+window.scrollY;
+
+let velocity=0;
+
+let scrollProgress=0;
+
+
+window.addEventListener(
+"scroll",
+()=>{
+
+    const current =
+        window.scrollY;
+
+    velocity =
+        current-lastScroll;
+
+    velocity =
+        Math.max(
+            -40,
+            Math.min(
+                40,
+                velocity
+            )
+        );
+
+    root.style.setProperty(
+        "--velocity",
+        velocity
+    );
+
+    root.style.setProperty(
+        "--scroll",
+        current
+    );
+
+    lastScroll=current;
+
+
+    const max =
+        document.body.scrollHeight -
+        innerHeight;
+
+    scrollProgress =
+        max>0
+        ? current/max
+        : 0;
+
+    document
+    .getElementById("scrollEnergy")
+    .style.width =
+        scrollProgress*100+"%";
+
+
+    /* velocity distortion */
+
+    document.body.style.transform=
+        `skewY(${velocity*.015}deg)`;
+
+});
+
+
+/* =========================================================
+   RESET BODY AFTER SCROLL
+========================================================= */
+
+let scrollReset;
+
+window.addEventListener(
+"scroll",
+()=>{
+
+    clearTimeout(scrollReset);
+
+    scrollReset =
+        setTimeout(
+        ()=>{
+
+            document.body.style.transform=
+                "skewY(0deg)";
+
+        },
+        80
+        );
+
+});
+
+
+/* =========================================================
+   SCROLL PARALLAX
+========================================================= */
+
+window.addEventListener(
+"scroll",
+()=>{
+
+    document
+    .querySelectorAll(
+        ".floating-object"
+    )
+    .forEach(
+    (obj,index)=>{
+
+        const speed =
+            .05 +
+            index*.025;
+
+        obj.style.transform=
+            `translateY(
+                ${window.scrollY*speed}px
+            )
+            rotate(
+                ${window.scrollY*.08}deg
+            )`;
+
+    });
+
+});
+
+
+/* =========================================================
+   AUTOMATIC QUOTES
+========================================================= */
+
+const quotes=[
+
+    [
+        "Discipline creates freedom.",
+        "DIGITAL DOJO"
+    ],
+
+    [
+        "Build what you want to exist.",
+        "CREATOR"
+    ],
+
+    [
+        "Train the body. Train the mind.",
+        "MARTIAL ARTS"
+    ],
+
+    [
+        "Every experiment teaches something.",
+        "ENGINEER"
+    ],
+
+    [
+        "Keep learning. Keep moving.",
+        "ELAVARASAN"
+    ]
+
+];
+
+const quoteText =
+document.getElementById("quoteText");
+
+const quoteAuthor =
+document.getElementById("quoteAuthor");
+
+let quoteIndex=0;
+
+
+function changeQuote(){
+
+    quoteText.style.opacity="0";
+    quoteText.style.transform=
+        "translateY(20px)";
+
+    setTimeout(()=>{
+
+        quoteText.textContent =
+            quotes[quoteIndex][0];
+
+        quoteAuthor.textContent =
+            quotes[quoteIndex][1];
+
+        quoteText.style.opacity="1";
+        quoteText.style.transform=
+            "translateY(0)";
+
+        quoteIndex =
+            (quoteIndex+1)
+            %
+            quotes.length;
+
+    },350);
+
+}
+
+changeQuote();
+
+setInterval(
+    changeQuote,
+    3500
+);
+
+
+/* =========================================================
+   CAROUSEL
+========================================================= */
+
+const track =
+document.getElementById(
+    "carouselTrack"
+);
+
+const slides =
+document.querySelectorAll(
+    ".carousel-slide"
+);
+
+let slideIndex=0;
+
+
+function updateCarousel(){
+
+    track.style.transform=
+        `translateX(-${slideIndex*100}%)`;
+
+}
+
+
+document
+.getElementById("next")
+.addEventListener(
+"click",
+()=>{
+
+    slideIndex =
+        (slideIndex+1)
+        %
+        slides.length;
+
+    updateCarousel();
+
+});
+
+
+document
+.getElementById("prev")
+.addEventListener(
+"click",
+()=>{
+
+    slideIndex--;
+
+    if(slideIndex<0)
+        slideIndex=
+            slides.length-1;
+
+    updateCarousel();
+
+});
+
+
+setInterval(()=>{
+
+    slideIndex =
+        (slideIndex+1)
+        %
+        slides.length;
+
+    updateCarousel();
+
+},5000);
+
+
+/* =========================================================
+   PARTICLE SYSTEM
+========================================================= */
+
+const canvas =
+document.getElementById("space");
+
+const ctx =
+canvas.getContext("2d");
+
+let particles=[];
+
+let shooting=[];
+
+
+function resize(){
+
+    canvas.width=
+        innerWidth;
+
+    canvas.height=
+        innerHeight;
+
+}
+
+resize();
+
+window.addEventListener(
+"resize",
+resize
+);
+
+
+/* normal particles */
+
+for(let i=0;i<110;i++){
+
+    particles.push({
+
+        x:Math.random()*innerWidth,
+        y:Math.random()*innerHeight,
+
+        r:Math.random()*1.5+.3,
+
+        vx:(Math.random()-.5)*.25,
+        vy:(Math.random()-.5)*.25,
+
+        a:Math.random()*.5+.1
+
+    });
+
+}
+
+
+/* =========================================================
+   SHOOTING PARTICLES
+========================================================= */
+
+function createShooting(){
+
+    shooting.push({
+
+        x:Math.random()*canvas.width,
+        y:Math.random()*canvas.height*.5,
+
+        vx:8+Math.random()*7,
+        vy:2+Math.random()*4,
+
+        life:1
+
+    });
+
+}
+
+
+setInterval(
+    createShooting,
+    1200
+);
+
+
+/* =========================================================
+   PARTICLE DRAW
+========================================================= */
+
+function drawParticles(){
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    /* normal */
+
+    particles.forEach(p=>{
+
+        p.x+=p.vx;
+        p.y+=p.vy;
+
+        if(p.x<0)p.x=canvas.width;
+        if(p.x>canvas.width)p.x=0;
+
+        if(p.y<0)p.y=canvas.height;
+        if(p.y>canvas.height)p.y=0;
+
+
+        ctx.beginPath();
+
+        ctx.arc(
+            p.x,
+            p.y,
+            p.r,
+            0,
+            Math.PI*2
+        );
+
+        ctx.fillStyle=
+            `rgba(
+                216,
+                255,
+                62,
+                ${p.a}
+            )`;
+
+        ctx.fill();
+
+    });
+
+
+    /* connections */
+
+    for(
+        let i=0;
+        i<particles.length;
+        i++
+    ){
+
+        for(
+            let j=i+1;
+            j<particles.length;
+            j++
+        ){
+
+            const a=
+                particles[i];
+
+            const b=
+                particles[j];
+
+            const dx=
+                a.x-b.x;
+
+            const dy=
+                a.y-b.y;
+
+            const dist=
+                Math.sqrt(
+                    dx*dx+dy*dy
+                );
+
+
+            if(dist<120){
+
+                ctx.beginPath();
+
+                ctx.moveTo(
+                    a.x,
+                    a.y
+                );
+
+                ctx.lineTo(
+                    b.x,
+                    b.y
+                );
+
+                ctx.strokeStyle=
+                    `rgba(
+                        216,
+                        255,
+                        62,
+                        ${
+                            .035*
+                            (1-dist/120)
+                        }
+                    )`;
+
+                ctx.stroke();
+
+            }
+
+        }
+
+    }
+
+
+    /* shooting */
+
+    shooting.forEach((s,index)=>{
+
+        s.x+=s.vx;
+        s.y+=s.vy;
+        s.life-=.015;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            s.x,
+            s.y
+        );
+
+        ctx.lineTo(
+            s.x-s.vx*5,
+            s.y-s.vy*5
+        );
+
+        ctx.strokeStyle=
+            `rgba(
+                94,
+                231,
+                255,
+                ${s.life}
+            )`;
+
+        ctx.lineWidth=2;
+
+        ctx.stroke();
+
+
+        if(
+            s.life<=0 ||
+            s.x>canvas.width+100
+        ){
+
+            shooting.splice(
+                index,
+                1
+            );
+
+        }
+
+    });
+
+
+    requestAnimationFrame(
+        drawParticles
+    );
+
+}
+
+drawParticles();
+
+
+/* =========================================================
+   PROFILE MODAL
+========================================================= */
+
+const profileTrigger =
+document.getElementById(
+    "profileTrigger"
+);
+
+const profileModal =
+document.getElementById(
+    "profileModal"
+);
+
+const closeProfile =
+document.getElementById(
+    "closeProfile"
+);
+
+
+profileTrigger.addEventListener(
+"click",
+()=>{
+
+    profileModal.classList.add(
+        "open"
+    );
+
+});
+
+
+closeProfile.addEventListener(
+"click",
+()=>{
+
+    profileModal.classList.remove(
+        "open"
+    );
+
+});
+
+
+profileModal.addEventListener(
+"click",
+e=>{
+
+    if(
+        e.target === profileModal
+    ){
+
+        profileModal.classList.remove(
+            "open"
+        );
+
+    }
+
+});
+
+
+/* =========================================================
+   KEYBOARD ESCAPE
+========================================================= */
+
+document.addEventListener(
+"keydown",
+e=>{
+
+    if(e.key==="Escape"){
+
+        profileModal.classList.remove(
+            "open"
+        );
+
+    }
+
+});
+
+
+/* =========================================================
+   PREVENT IMAGE DRAG
+========================================================= */
+
+document
+.querySelectorAll("img")
+.forEach(img=>{
+
+    img.addEventListener(
+        "dragstart",
+        e=>e.preventDefault()
+    );
+
+});
+
+
+/* =========================================================
+   CONSOLE
+========================================================= */
+
+console.log(
+"%c ELAVARASAN DIGITAL DOJO ",
+"background:#d8ff3e;color:#000;padding:10px;font-weight:bold;"
+);
+
+console.log(
+"Motion Engine Loaded."
+);
+
+</script>
+
+</body>
+</html>
