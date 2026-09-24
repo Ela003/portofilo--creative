@@ -499,28 +499,6 @@ setTimeout(()=>beam.remove(),9000);
 },4500);
 
 
-/* ================= DOUBLE CLICK SEARCH ================= */
-
-document.addEventListener("dblclick",e=>{
-
-if(["H1","H2","H3","P"].includes(e.target.tagName)){
-
-const text=e.target.innerText.trim();
-
-if(text){
-
-window.open(
-"https://www.google.com/search?q="+encodeURIComponent(text),
-"_blank"
-);
-
-}
-
-}
-
-});
-
-
 /* ================= KEYBOARD ================= */
 
 document.addEventListener("keydown",e=>{
