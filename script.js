@@ -90,6 +90,7 @@ cursorRing.style.top=e.clientY+"px";
 
 const portal=document.getElementById("portal");
 
+if(portal){
 document.addEventListener("mousemove",e=>{
 
 const x=e.clientX/innerWidth-.5;
@@ -103,6 +104,7 @@ portal.style.transform=
 portal.addEventListener("mouseleave",()=>{
 portal.style.transform="";
 });
+}
 
 
 /* ================= CARD TILT ================= */
@@ -218,11 +220,13 @@ osc.stop(audioCtx.currentTime+.18);
 /* ================= MODAL ================= */
 
 const modal=document.getElementById("modal");
-const modalTitle=document.getElementById("modalTitle");
-const modalText=document.getElementById("modalText");
-const modalAction=document.getElementById("modalAction");
+const modalTitle=modal ? document.getElementById("modalTitle") : null;
+const modalText=modal ? document.getElementById("modalText") : null;
+const modalAction=modal ? document.getElementById("modalAction") : null;
 
 function openAction(action){
+
+if(!modal || !modalTitle || !modalText || !modalAction) return;
 
 sound();
 
@@ -258,13 +262,16 @@ openAction(btn.dataset.action);
 
 });
 
-document.getElementById("modalClose").onclick=()=>{
+const modalClose=document.getElementById("modalClose");
+if(modalClose && modal){
+modalClose.onclick=()=>{
 modal.classList.remove("active");
 };
 
 modal.addEventListener("click",e=>{
 if(e.target===modal)modal.classList.remove("active");
 });
+}
 
 
 /* ================= ABOUT NAVIGATION ================= */
@@ -302,9 +309,70 @@ sound();
 });
 
 
+/* ================= DRAGGABLE ORBIT NAV ================= */
+
+const orbitNav=document.querySelector(".orbit-nav");
+let orbitDragging=false;
+let orbitDragStartX=0;
+let orbitDragStartY=0;
+let orbitDragStartLeft=0;
+let orbitDragStartTop=0;
+
+if(orbitNav){
+
+orbitNav.addEventListener("pointerdown",e=>{
+
+if(e.target.closest("a, button")) return;
+
+orbitDragging=true;
+orbitNav.classList.add("dragging");
+orbitDragStartX=e.clientX;
+orbitDragStartY=e.clientY;
+
+const rect=orbitNav.getBoundingClientRect();
+orbitDragStartLeft=rect.left;
+orbitDragStartTop=rect.top;
+
+orbitNav.style.right="auto";
+orbitNav.style.top="auto";
+orbitNav.style.left=rect.left+"px";
+orbitNav.style.top=rect.top+"px";
+orbitNav.style.transform="none";
+orbitNav.setPointerCapture?.(e.pointerId);
+});
+
+orbitNav.addEventListener("pointermove",e=>{
+if(!orbitDragging) return;
+
+const dx=e.clientX-orbitDragStartX;
+const dy=e.clientY-orbitDragStartY;
+
+orbitNav.style.left=(orbitDragStartLeft+dx)+"px";
+orbitNav.style.top=(orbitDragStartTop+dy)+"px";
+
+});
+
+const stopOrbitDrag=(e)=>{
+if(!orbitDragging) return;
+orbitDragging=false;
+orbitNav.classList.remove("dragging");
+if(e && orbitNav.hasPointerCapture?.(e.pointerId)){
+orbitNav.releasePointerCapture(e.pointerId);
+}
+};
+
+orbitNav.addEventListener("pointerup",stopOrbitDrag);
+orbitNav.addEventListener("pointerleave",stopOrbitDrag);
+orbitNav.addEventListener("pointercancel",stopOrbitDrag);
+
+}
+
+
 /* ================= CENTER NAV ================= */
 
-document.getElementById("orbitCenter").onclick=()=>{
+const orbitCenter=document.getElementById("orbitCenter");
+if(orbitCenter){
+orbitCenter.onclick=()=>{
 
 document.getElementById("home").scrollIntoView({
 behavior:"smooth"
@@ -313,11 +381,13 @@ behavior:"smooth"
 sound();
 
 };
+}
 
 
 /* ================= ELAVARASAN PROFILE ================= */
-
-document.getElementById("profileButton").onclick=()=>{
+const profileButton=document.getElementById("profileButton");
+if(profileButton && modal && modalTitle && modalText && modalAction){
+profileButton.onclick=()=>{
 
 sound();
 
@@ -363,10 +433,11 @@ goToAbout();
 modal.classList.add("active");
 
 };
+}
 
 
 /* ================= PORTAL ACTION ================= */
-
+if(portal){
 portal.onclick=()=>{
 
 sound();
@@ -387,6 +458,7 @@ easing:"cubic-bezier(.16,1,.3,1)"
 openAction("PORTAL ACTIVATED");
 
 };
+}
 
 
 /* ================= CLICK RIPPLE ================= */

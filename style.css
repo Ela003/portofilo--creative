@@ -67,7 +67,12 @@ position:fixed;right:35px;top:50%;width:190px;height:190px;
 transform:translateY(-50%);z-index:600;border-radius:50%;
 background:radial-gradient(circle,rgba(216,255,50,.07),rgba(0,0,0,.4) 65%,transparent 70%);
 backdrop-filter:blur(14px);
+box-shadow:0 0 30px rgba(216,255,50,.08);
 animation:navFloat 5s ease-in-out infinite;
+cursor:grab;touch-action:none;user-select:none;
+}
+.orbit-nav.dragging{
+cursor:grabbing;animation-play-state:paused;
 }
 .orbit-nav:before{
 content:"";position:absolute;inset:-14px;border-radius:50%;
@@ -79,7 +84,12 @@ content:"";position:absolute;inset:15px;border-radius:50%;
 border:1px dashed #d8ff3225;
 animation:spinReverse 12s linear infinite;
 }
-@keyframes navFloat{50%{margin-top:-10px}}
+@keyframes navFloat{
+0%,100%{transform:translateY(-50%) translateX(0) rotate(0deg)}
+25%{transform:translateY(-52%) translateX(-4px) rotate(-2deg)}
+50%{transform:translateY(-48%) translateX(4px) rotate(2deg)}
+75%{transform:translateY(-51%) translateX(-2px) rotate(-1deg)}
+}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes spinReverse{to{transform:rotate(-360deg)}}
 
